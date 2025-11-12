@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { View, StyleSheet, ScrollView, Image, ActivityIndicator, Alert, Button, Dimensions, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, ActivityIndicator, Alert, Dimensions, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
 import { supabase } from '../supabaseClient';
 import { MainScreenProps, Post, Comment, Profile } from '../navigation/types';
 import { useFocusEffect } from '@react-navigation/native';
@@ -7,6 +7,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/authStore';
 import { StyledText as Text } from '../components/StyledText';
 import { Colors } from '../constants/colors';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyledButton } from '../components/styledButton';
 
 const { width } = Dimensions.get('window');
 
@@ -83,10 +85,12 @@ const PostDetailCard: React.FC<PostDetailCardProps> = ({ post, navigation }) => 
           <Text weight="bold" style={styles.usernameText}>{username}</Text>
         </TouchableOpacity>
         <Text style={styles.postText}>{post.text_content}</Text>
+
         <Text style={styles.timestamp}>{postDate}</Text>
+
         {isMyPost && (
           <View style={styles.deleteButton}>
-            <Button title="Delete Post" color={Colors.DANGER} onPress={handleDelete} />
+            <StyledButton title="Delete Post" color="danger" onPress={handleDelete} />
           </View>
         )}
       </View>
@@ -195,36 +199,40 @@ const PostDetailScreen: React.FC<MainScreenProps<'PostDetail'>> = ({ route, navi
   }
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-      keyboardVerticalOffset={100}
-    >
-      <FlatList
-        data={comments}
-        keyExtractor={(item) => item.id}
-        ListHeaderComponent={<PostDetailCard post={post} navigation={navigation} />}
-        renderItem={({ item }) => <CommentItem comment={item} />}
-        ListEmptyComponent={
-          <View style={styles.center}>
-            <Text style={styles.emptyText}>No comments yet.</Text>
-          </View>
-        }
-      />
-      <View style={styles.commentInputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Add a comment..."
-          placeholderTextColor={Colors.TEXT_SECONDARY}
-          value={newComment}
-          onChangeText={setNewComment}
-          multiline
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+        keyboardVerticalOffset={60}
+      >
+        <FlatList
+          data={comments}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={<PostDetailCard post={post} navigation={navigation} />}
+          renderItem={({ item }) => <CommentItem comment={item} />}
+          ListEmptyComponent={
+            <View style={styles.center}>
+              <Text style={styles.emptyText}>No comments yet.</Text>
+            </View>
+          }
         />
-        <TouchableOpacity onPress={handlePostComment} disabled={postingComment}>
-          <Text style={[styles.postButton, postingComment && styles.postButtonDisabled]}>Post</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+        <SafeAreaView style={styles.commentInputSafeArea} edges={['bottom']}>
+          <View style={styles.commentInputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Add a comment..."
+              placeholderTextColor={Colors.TEXT_SECONDARY}
+              value={newComment}
+              onChangeText={setNewComment}
+              multiline
+            />
+            <TouchableOpacity onPress={handlePostComment} disabled={postingComment}>
+              <Text style={[styles.postButton, postingComment && styles.postButtonDisabled]}>Post</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -239,12 +247,12 @@ const styles = StyleSheet.create({
   textContainer: { padding: 12 },
   postText: { fontSize: 14, lineHeight: 20, marginTop: 4, color: Colors.TEXT_PRIMARY },
   timestamp: { fontSize: 12, color: Colors.TEXT_SECONDARY, marginTop: 8 },
-  deleteButton: { marginTop: 20, width: '60%', alignSelf: 'center', borderRadius: 12, overflow: 'hidden' },
+  deleteButton: { marginTop: 20, width: '60%', alignSelf: 'center' },
   separator: { height: 1, backgroundColor: Colors.BORDER, marginHorizontal: 12 },
   commentContainer: {
     flexDirection: 'row',
-    padding: 12,
-    paddingLeft: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
   commentAvatar: {
     width: 32,
@@ -258,7 +266,8 @@ const styles = StyleSheet.create({
   },
   commentText: {
     color: Colors.TEXT_PRIMARY,
-    marginTop: 2,
+    marginTop: 4,
+    lineHeight: 18,
   },
   emptyText: {
     color: Colors.TEXT_SECONDARY,
@@ -266,15 +275,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingBottom: 20,
   },
+  commentInputSafeArea: {
+    backgroundColor: Colors.SURFACE,
+    borderTopWidth: 1,
+    borderTopColor: Colors.BORDER,
+  },
   commentInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingTop: 10,
-    paddingBottom: 25,
-    borderTopWidth: 1,
-    borderTopColor: Colors.BORDER,
-    backgroundColor: Colors.SURFACE,
   },
   input: {
     flex: 1,

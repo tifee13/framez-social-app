@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
-import {
-  Alert,
-  View,
-  TextInput,
-  Button,
-  Platform,
-  KeyboardAvoidingView,
-} from 'react-native';
+import { Alert, View, TextInput, Platform, KeyboardAvoidingView } from 'react-native';
 import { supabase } from '../supabaseClient';
 import { AuthScreenProps } from '../navigation/types';
 import { authStyles } from '../AuthStyles';
 import { StyledText as Text } from '../components/StyledText';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
+import { StyledButton } from '../components/styledButton';
 
 const LoginScreen: React.FC<AuthScreenProps<'Login'>> = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -27,17 +21,14 @@ const LoginScreen: React.FC<AuthScreenProps<'Login'>> = ({ navigation }) => {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-
     if (!email) {
       newErrors.email = 'Email is required.';
     } else if (!email.includes('@') || !email.includes('.')) {
       newErrors.email = 'Please enter a valid email address.';
     }
-
     if (!password) {
       newErrors.password = 'Password is required.';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -45,14 +36,11 @@ const LoginScreen: React.FC<AuthScreenProps<'Login'>> = ({ navigation }) => {
   async function signInWithEmail() {
     if (!validate()) return;
     setLoading(true);
-
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-
     if (error) Alert.alert(error.message);
-
     setLoading(false);
   }
 
@@ -66,6 +54,7 @@ const LoginScreen: React.FC<AuthScreenProps<'Login'>> = ({ navigation }) => {
         <Text style={authStyles.title}>FRAMEZ</Text>
       </View>
 
+      <Text style={authStyles.label}>Email</Text>
       <TextInput
         style={[
           authStyles.input,
@@ -85,6 +74,7 @@ const LoginScreen: React.FC<AuthScreenProps<'Login'>> = ({ navigation }) => {
       />
       {errors.email && <Text style={authStyles.errorText}>{errors.email}</Text>}
 
+      <Text style={authStyles.label}>Password</Text>
       <TextInput
         style={[
           authStyles.input,
@@ -107,19 +97,19 @@ const LoginScreen: React.FC<AuthScreenProps<'Login'>> = ({ navigation }) => {
       )}
 
       <View style={authStyles.buttonContainer}>
-        <Button
-          title={loading ? 'Loading...' : 'SIGN IN'}
+        <StyledButton
+          title="SIGN IN"
           onPress={signInWithEmail}
-          disabled={loading}
-          color={Colors.PRIMARY}
+          loading={loading}
+          color="primary"
         />
       </View>
 
       <View style={authStyles.buttonContainer}>
-        <Button
+        <StyledButton
           title="CREATE ACCOUNT"
           onPress={() => navigation.navigate('SignUp')}
-          color={Colors.DISABLED}
+          color="disabled"
         />
       </View>
     </KeyboardAvoidingView>

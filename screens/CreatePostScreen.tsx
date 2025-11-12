@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import {
   View,
-  Button,
   Image,
   TextInput,
-  StyleSheet,
   Alert,
   ScrollView,
   Platform,
@@ -20,6 +18,7 @@ import { authStyles } from '../AuthStyles';
 import { StyledText as Text } from '../components/StyledText';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
+import { StyledButton } from '../components/styledButton';
 
 const CreatePostScreen: React.FC<AppScreenProps<'Create'>> = ({ navigation }) => {
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
@@ -104,7 +103,6 @@ const CreatePostScreen: React.FC<AppScreenProps<'Create'>> = ({ navigation }) =>
 
   const isFormValid = image && textContent;
   const isDisabled = loading || !isFormValid;
-  const buttonColor = isFormValid || loading ? Colors.PRIMARY : Colors.DISABLED;
   const buttonTitle = loading ? 'Publishing...' : 'Publish Post';
 
   return (
@@ -154,7 +152,13 @@ const CreatePostScreen: React.FC<AppScreenProps<'Create'>> = ({ navigation }) =>
         )}
 
         <View style={authStyles.buttonContainer}>
-          <Button title={buttonTitle} onPress={handleCreatePost} disabled={isDisabled} color={buttonColor} />
+          <StyledButton 
+            title={buttonTitle} 
+            onPress={handleCreatePost} 
+            disabled={isDisabled}
+            loading={loading}
+            color={isFormValid || loading ? 'primary' : 'disabled'}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

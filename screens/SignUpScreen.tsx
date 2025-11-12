@@ -3,7 +3,6 @@ import {
   Alert,
   View,
   TextInput,
-  Button,
   Image,
   TouchableOpacity,
   ScrollView,
@@ -18,6 +17,7 @@ import { authStyles } from '../AuthStyles';
 import { StyledText as Text } from '../components/StyledText';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
+import { StyledButton } from '../components/styledButton';
 
 const SignUpScreen: React.FC<AuthScreenProps<'SignUp'>> = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -35,29 +35,23 @@ const SignUpScreen: React.FC<AuthScreenProps<'SignUp'>> = ({ navigation }) => {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-
-    if (!avatar) newErrors.avatar = 'Please pick an avatar.';
-
+    if (!avatar) newErrors.avatar = 'Please pick an Image.';
     if (!username) {
       newErrors.username = 'Username is required.';
     } else if (username.length < 3) {
       newErrors.username = 'Username must be at least 3 characters.';
     }
-
     if (!bio) newErrors.bio = 'Bio is required.';
-
     if (!email) {
       newErrors.email = 'Email is required.';
     } else if (!email.includes('@') || !email.includes('.')) {
       newErrors.email = 'Invalid email format.';
     }
-
     if (!password) {
       newErrors.password = 'Password is required.';
     } else if (password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters.';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -65,12 +59,10 @@ const SignUpScreen: React.FC<AuthScreenProps<'SignUp'>> = ({ navigation }) => {
   const pickAvatar = async () => {
     clearError('avatar');
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
     if (status !== 'granted') {
       Alert.alert('Sorry, we need camera roll permissions for this.');
       return;
     }
-
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -78,7 +70,6 @@ const SignUpScreen: React.FC<AuthScreenProps<'SignUp'>> = ({ navigation }) => {
       quality: 0.5,
       base64: true,
     });
-
     if (!result.canceled && result.assets[0].base64) {
       setAvatar({
         uri: result.assets[0].uri,
@@ -89,45 +80,35 @@ const SignUpScreen: React.FC<AuthScreenProps<'SignUp'>> = ({ navigation }) => {
 
   async function signUpWithEmail() {
     if (!validate()) return;
-
     setLoading(true);
-
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
     });
-
     if (authError) {
       Alert.alert(authError.message);
       setLoading(false);
       return;
     }
-
     if (!authData.user) {
       Alert.alert('Error', 'Failed to create user.');
       setLoading(false);
       return;
     }
-
     try {
       const filePath = `${authData.user.id}/${Date.now()}.png`;
-
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, decode(avatar!.base64), { contentType: 'image/png' });
-
       if (uploadError) throw uploadError;
-
       const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(uploadData.path);
       const publicUrl = urlData.publicUrl;
-
       const { error: profileError } = await supabase.from('profiles').insert({
         id: authData.user.id,
         username,
         avatar_url: publicUrl,
         bio,
       });
-
       if (profileError) throw profileError;
     } catch (error) {
       if (error instanceof Error) Alert.alert('Error creating profile', error.message);
@@ -227,19 +208,19 @@ const SignUpScreen: React.FC<AuthScreenProps<'SignUp'>> = ({ navigation }) => {
         {errors.password && <Text style={authStyles.errorText}>{errors.password}</Text>}
 
         <View style={authStyles.buttonContainer}>
-          <Button
-            title={loading ? 'Creating...' : 'SIGN UP'}
+          <StyledButton
+            title="SIGN UP"
             onPress={signUpWithEmail}
-            disabled={loading}
-            color={Colors.PRIMARY}
+            loading={loading}
+            color="primary"
           />
         </View>
 
         <View style={authStyles.buttonContainer}>
-          <Button
+          <StyledButton
             title="LOGIN"
             onPress={() => navigation.navigate('Login')}
-            color={Colors.DISABLED}
+            color="disabled"
           />
         </View>
       </ScrollView>

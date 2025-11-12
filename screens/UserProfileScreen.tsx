@@ -1,13 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  StyleSheet,
-  Image,
-  Alert,
-  ActivityIndicator,
-  Dimensions,
-  SafeAreaView,
-} from 'react-native';
+import { View, StyleSheet, Image, Alert, ActivityIndicator, Dimensions, SafeAreaView } from 'react-native';
 import { supabase } from '../supabaseClient';
 import { MainScreenProps, Post, Profile } from '../navigation/types';
 import { useFocusEffect } from '@react-navigation/native';
@@ -29,22 +21,18 @@ const UserProfileScreen: React.FC<MainScreenProps<'UserProfile'>> = ({ route, na
 
         const [profileRes, postsRes] = await Promise.all([
           supabase.from('profiles').select('*').eq('id', userId).single(),
-          supabase
-            .from('posts')
-            .select('*')
-            .eq('user_id', userId)
-            .order('created_at', { ascending: false }),
+          supabase.from('posts').select('*').eq('user_id', userId).order('created_at', { ascending: false })
         ]);
 
         if (profileRes.error || postsRes.error) {
-          Alert.alert('Error', "Could not fetch this user's profile.");
+          Alert.alert('Error', 'Could not fetch this user\'s profile.');
           navigation.goBack();
           return;
         }
 
         if (profileRes.data) setProfile(profileRes.data as Profile);
         if (postsRes.data) setPosts(postsRes.data as Post[]);
-
+        
         setLoading(false);
       };
 
@@ -59,26 +47,23 @@ const UserProfileScreen: React.FC<MainScreenProps<'UserProfile'>> = ({ route, na
       ) : (
         <Ionicons name="person-circle" size={80} color={Colors.TEXT_SECONDARY} />
       )}
-
-      <Text weight="bold" style={styles.usernameText}>
-        {profile?.username || 'Loading...'}
-      </Text>
-
-      {profile?.bio && <Text style={styles.bioText}>{profile.bio}</Text>}
+      <Text weight="bold" style={styles.usernameText}>{profile?.username || 'Loading...'}</Text>
+      {profile?.bio && (
+        <Text style={styles.bioText}>{profile.bio}</Text>
+      )}
     </View>
   );
 
   if (loading) {
-    return (
-      <View style={[styles.container, styles.center]}>
-        <ActivityIndicator size="large" color={Colors.PRIMARY} />
-      </View>
-    );
+    return <View style={[styles.container, styles.center]}><ActivityIndicator size="large" color={Colors.PRIMARY} /></View>;
   }
 
   return (
     <SafeAreaView style={styles.container}>
       {renderHeader()}
+      <View style={styles.gridHeader}>
+        <Text weight="bold" style={styles.gridHeaderText}>All Posts</Text>
+      </View>
       <PostGrid posts={posts} emptyMessage="This user has not posted anything yet." />
     </SafeAreaView>
   );
@@ -120,6 +105,18 @@ const styles = StyleSheet.create({
     color: Colors.TEXT_PRIMARY,
     textAlign: 'center',
     marginTop: 5,
+  },
+  gridHeader: {
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: Colors.SURFACE,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.BORDER,
+  },
+  gridHeaderText: {
+    color: Colors.TEXT_PRIMARY,
+    fontSize: 16,
   },
 });
 

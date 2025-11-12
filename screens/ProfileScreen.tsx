@@ -1,10 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   Image,
-  Button,
   Alert,
   ActivityIndicator,
   Dimensions,
@@ -19,6 +17,7 @@ import { TabView, SceneMap, TabBar, TabBarProps } from 'react-native-tab-view';
 import PostGrid from '../components/PostGrid';
 import { StyledText as CustomText } from '../components/StyledText';
 import { Colors } from '../constants/colors';
+import { StyledButton } from '../components/styledButton';
 
 const MyPostsRoute: React.FC<{ posts: Post[] }> = ({ posts }) => (
   <PostGrid posts={posts} emptyMessage="You haven't posted anything yet." />
@@ -47,8 +46,8 @@ const ProfileScreen: React.FC<ProfileScreenNavigationProp> = ({ navigation }) =>
   const [index, setIndex] = useState(0);
   const [routes] = useState<TabRoute[]>([
     { key: 'myPosts', title: 'My Posts' },
-    { key: 'savedPosts', title: 'Saved' },
     { key: 'likedPosts', title: 'Liked' },
+    { key: 'savedPosts', title: 'Saved' },
   ]);
 
   const session = useAuthStore((state) => state.session);
@@ -99,8 +98,8 @@ const ProfileScreen: React.FC<ProfileScreenNavigationProp> = ({ navigation }) =>
 
   const renderScene = SceneMap({
     myPosts: () => <MyPostsRoute posts={myPosts} />,
-    savedPosts: () => <SavedPostsRoute posts={savedPosts} />,
     likedPosts: () => <LikedPostsRoute posts={likedPosts} />,
+    savedPosts: () => <SavedPostsRoute posts={savedPosts} />,
   });
 
   const renderTabBar = (props: TabBarProps<TabRoute>) => (
@@ -139,10 +138,10 @@ const ProfileScreen: React.FC<ProfileScreenNavigationProp> = ({ navigation }) =>
 
       <View style={styles.buttonRow}>
         <View style={styles.buttonWrapper}>
-          <Button title="Edit Profile" onPress={handleEditProfile} color={Colors.PRIMARY} />
+          <StyledButton title="Edit Profile" onPress={handleEditProfile} color="primary" />
         </View>
         <View style={styles.buttonWrapper}>
-          <Button title="Log Out" onPress={handleSignOut} color={Colors.DANGER} />
+          <StyledButton title="Log Out" onPress={handleSignOut} color="danger" />
         </View>
       </View>
     </View>
@@ -185,8 +184,8 @@ const styles = StyleSheet.create({
   usernameText: { fontSize: 20, color: Colors.TEXT_PRIMARY },
   bioText: { fontSize: 14, color: Colors.TEXT_PRIMARY, textAlign: 'center', marginTop: 5 },
   emailText: { fontSize: 14, color: Colors.TEXT_SECONDARY, marginTop: 5, marginBottom: 15 },
-  buttonRow: { flexDirection: 'row', justifyContent: 'space-around', width: '100%' },
-  buttonWrapper: { flex: 1, marginHorizontal: 5, borderRadius: 12, overflow: 'hidden' },
+  buttonRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%' },
+  buttonWrapper: { flex: 1, marginHorizontal: 5 },
 });
 
 export default ProfileScreen;

@@ -47,8 +47,6 @@ export const authStyles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 10,
-    borderRadius: 12,
-    overflow: 'hidden',
   },
   avatarPicker: {
     alignSelf: 'center',
@@ -89,18 +87,20 @@ export const authStyles = StyleSheet.create({
   imagePreviewContainer: {
     alignItems: 'center',
     marginVertical: 20,
+    width: '100%',
+  },
+  avatarPickerContainer: {
+    alignItems: 'center',
+    marginBottom: 30,
   },
   imagePreview: {
     width: '100%',
-    height: 300,
-    borderRadius: 12,
+    height: '100%',
     resizeMode: 'cover',
-    borderWidth: 1,
-    borderColor: Colors.BORDER,
   },
   imagePlaceholder: {
     width: '100%',
-    height: 250,
+    aspectRatio: 1,
     borderRadius: 12,
     backgroundColor: Colors.SURFACE,
     justifyContent: 'center',

@@ -87,19 +87,17 @@ const PostCard: React.FC<{
           {post.like_count} {post.like_count === 1 ? 'like' : 'likes'}
         </Text>
 
-        {/* --- THIS IS THE FIX --- */}
         <View style={styles.captionContainer}>
           <TouchableOpacity onPress={handleNamePress}>
             <Text weight="bold" style={styles.usernameText}>{username}</Text>
           </TouchableOpacity>
           <Text style={styles.captionText}>{post.text_content}</Text>
         </View>
-        {/* --- END OF FIX --- */}
 
         {post.comment_count > 0 && (
           <TouchableOpacity onPress={handleCommentPress}>
             <Text style={styles.timestamp}>
-              View all {post.comment_count} {post.comment_count === 1 ? 'comment' : 'comments'}
+              {post.comment_count === 1 ? 'View 1 comment' : `View all ${post.comment_count} comments`}
             </Text>
           </TouchableOpacity>
         )}
@@ -362,7 +360,7 @@ const styles = StyleSheet.create({
   postHeader: { flexDirection: 'row', alignItems: 'center', padding: 12 },
   avatarContainer: { marginRight: 10, width: 32, height: 32, borderRadius: 16, overflow: 'hidden' },
   avatar: { width: '100%', height: '100%', backgroundColor: Colors.BACKGROUND },
-  usernameText: { color: Colors.TEXT_PRIMARY },
+  usernameText: { color: Colors.TEXT_PRIMARY, marginRight: 5 },
   image: { width: width, height: width, resizeMode: 'cover' },
   postFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10 },
   iconContainer: { flexDirection: 'row', alignItems: 'center' },
